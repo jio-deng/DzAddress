@@ -11,14 +11,19 @@ import org.json.JSONObject;
  */
 public class AddressBean implements Parcelable {
 
+    public int id;
     public String name;
     public String phone;
     public String address;
     public boolean isDefault;
     public String tags;
 
+    public AddressBean() {
+
+    }
 
     public AddressBean(Parcel in) {
+        id = in.readInt();
         name = in.readString();
         phone = in.readString();
         address = in.readString();
@@ -27,6 +32,7 @@ public class AddressBean implements Parcelable {
     }
 
     public AddressBean(JSONObject obj) {
+        id = obj.optInt("id");
         name = obj.optString("name");
         phone = obj.optString("phone");
         address = obj.optString("address");
@@ -53,6 +59,7 @@ public class AddressBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(phone);
         dest.writeString(address);
@@ -63,6 +70,7 @@ public class AddressBean implements Parcelable {
     @Override
     public String toString() {
         return "AddressBean{" +
+                "id:" + id + "," +
                 "name:" + name + "," +
                 "phone:" + phone + "," +
                 "address:" + address + "," +

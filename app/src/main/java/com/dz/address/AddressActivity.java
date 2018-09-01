@@ -4,22 +4,28 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.TextView;
 
+import com.dz.address.bean.AddressBean;
 import com.dz.address.fragment.AddressChangeFragment;
 import com.dz.address.fragment.AddressListFragment;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 /**
  * @Description 收货地址
  * Created by deng on 2018/8/29.
  */
-public class AddressActivity extends Activity {
+public class AddressActivity extends Activity implements AddressListFragment.IAddressEdit {
     private static final String TAG = "AddressActivity";
 
     public static final int RESULT_SET_OK = 1 << 2;
     public static final int RESULT_EMPTY = 1 << 2 + 1;
+    public static final String TYPE_NEW_ADDRESS = "type_new_address";
+    public static final String TYPE_EDIT_ADDRESS = "type_edit_address";
 
     private boolean hasAddress;
     private Stack<Fragment> mFragments;
@@ -41,6 +47,12 @@ public class AddressActivity extends Activity {
     private void init() {
         mFragments = new Stack<>();
         ((TextView) findViewById(R.id.tv_title)).setText("收货地址");
+        findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         showListFragment();
     }
 
@@ -58,8 +70,16 @@ public class AddressActivity extends Activity {
     /**
      * 显示收货地址编辑界面
      */
-    private void showDetailFragment() {
+    private void showDetailFragment(String type, AddressBean bean) {
         Fragment fragment = new AddressChangeFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("type", type);
+        if (bean != null) {
+            bundle.putParcelable("address", bean);
+        }
+        fragment.setArguments(bundle);
+
         showFragment(fragment);
     }
 
@@ -106,6 +126,20 @@ public class AddressActivity extends Activity {
         } else {
             setResult(hasAddress ? RESULT_SET_OK : RESULT_EMPTY);
             finish();
+        }
+    }
+
+    /**
+     * 跳转编辑界面
+     * @param type new or edit
+     * @param addressList editable data
+     */
+    @Override
+    public void onAddressEdit(String type, ArrayList<AddressBean> addressList, int position) {
+        if (TextUtils.equals(type, TYPE_NEW_ADDRESS)) {
+            showDetailFragment(type, null);
+        } else {
+            showDetailFragment(type, addressList.get(position));
         }
     }
 }

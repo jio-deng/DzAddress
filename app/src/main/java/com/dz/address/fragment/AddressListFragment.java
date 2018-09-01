@@ -1,5 +1,6 @@
 package com.dz.address.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,10 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.dz.address.R;
 import com.dz.address.adapter.AddressListAdapter;
-import com.dz.address.adapter.CommonItemDecoration;
 import com.dz.address.bean.AddressBean;
 
 import org.json.JSONArray;
@@ -20,6 +21,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static com.dz.address.AddressActivity.TYPE_EDIT_ADDRESS;
+import static com.dz.address.AddressActivity.TYPE_NEW_ADDRESS;
 
 /**
  * @Description 收货地址列表界面
@@ -31,7 +35,18 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
     private RecyclerView mRvList;
     private AddressListAdapter adapter;
     private ArrayList<AddressBean> addressList;
+    private IAddressEdit callback;
     private boolean hasAddress;
+
+    public interface IAddressEdit {
+        void onAddressEdit(String type, ArrayList<AddressBean> addressList, int position);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callback = (IAddressEdit) activity;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +77,7 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
         }
         adapter.setAddressList(addressList);
         mRvList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRvList.addItemDecoration(new CommonItemDecoration(getActivity()));
+//        mRvList.addItemDecoration(new CommonItemDecoration(getActivity()));
         mRvList.setAdapter(adapter);
     }
 
@@ -71,7 +86,11 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_address_new:
-                //TODO:
+                if (addressList.size() >= 10) {
+                    Toast.makeText(getActivity(), "最多有10个收货地址，无法继续添加", Toast.LENGTH_SHORT).show();
+                } else {
+                    callback.onAddressEdit(TYPE_NEW_ADDRESS, null, -1);
+                }
                 break;
         }
     }
@@ -83,7 +102,7 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
      */
     @Override
     public void gotoEdit(ArrayList<AddressBean> addressList, int position) {
-
+        callback.onAddressEdit(TYPE_EDIT_ADDRESS, addressList, position);
     }
 
     /**

@@ -50,6 +50,13 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
         } else {
             holder.mTvTag.setVisibility(View.INVISIBLE);
         }
+        if (addressBean.isDefault) {
+            holder.mTvIsDefault.setVisibility(View.VISIBLE);
+            holder.mIsDefaultBg.setVisibility(View.VISIBLE);
+        } else {
+            holder.mTvIsDefault.setVisibility(View.GONE);
+            holder.mIsDefaultBg.setVisibility(View.GONE);
+        }
         holder.mTvEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,6 +84,8 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
         private TextView mTvTag;
         private TextView mTvEdit;
         private TextView mTvDelete;
+        private TextView mTvIsDefault;
+        private View mIsDefaultBg;
 
         AddressViewHolder(View itemView) {
             super(itemView);
@@ -87,6 +96,8 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
             mTvTag = itemView.findViewById(R.id.tv_tag);
             mTvEdit = itemView.findViewById(R.id.tv_btn_edit);
             mTvDelete = itemView.findViewById(R.id.tv_btn_delete);
+            mTvIsDefault = itemView.findViewById(R.id.tv_default);
+            mIsDefaultBg = itemView.findViewById(R.id.tv_default_bg);
         }
     }
 
