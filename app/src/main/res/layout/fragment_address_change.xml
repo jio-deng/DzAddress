@@ -7,63 +7,79 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="收货人："/>
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text=" 收 货 人 ："
+            android:textSize="13sp" />
 
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/et_address_change_name"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:background="@android:color/white"
+            android:textSize="13sp"
             android:hint="收货人姓名"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="手机号码："/>
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="手机号码："
+            android:textSize="13sp"/>
 
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/et_address_change_phone"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:background="@android:color/white"
-            android:hint="收货人手机号码"/>
+            android:hint="收货人手机号码"
+            android:textSize="13sp"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_choose_location"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="所在地区："/>
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="所在地区："
+            android:textSize="13sp"/>
 
         <TextView
             android:id="@+id/tv_location"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="13sp"/>
 
         <TextView
             android:id="@+id/tv_choose_loca"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="请选择>"/>
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="请选择>"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textSize="13sp"/>
 
     </LinearLayout>
 
@@ -74,27 +90,35 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="详细地址："/>
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="详细地址："
+            android:textSize="13sp"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:id="@+id/et_address_change_address"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:background="@android:color/white"
-            android:hint="街道名、楼牌号等"/>
+            android:hint="街道名、楼牌号等"
+            android:textSize="13sp"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginTop="30dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="地址标签："/>
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="地址标签："
+            android:textSize="13sp"/>
 
         <TextView
             android:id="@+id/tv_address_define"
@@ -107,6 +131,21 @@
         android:id="@+id/radio_is_default"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="设为默认"/>
+        android:text="设为默认"
+        android:textSize="13sp"/>
+
+    <TextView
+        android:id="@+id/tv_save"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:background="@android:color/holo_red_light"
+        android:gravity="center"
+        android:text="保存"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"/>
 
 </LinearLayout>

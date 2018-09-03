@@ -19,7 +19,7 @@ import java.util.Stack;
  * @Description 收货地址
  * Created by deng on 2018/8/29.
  */
-public class AddressActivity extends Activity implements AddressListFragment.IAddressEdit {
+public class AddressActivity extends Activity implements AddressListFragment.IAddressEdit, AddressChangeFragment.OnChangeCompleted {
     private static final String TAG = "AddressActivity";
 
     public static final int RESULT_SET_OK = 1 << 2;
@@ -29,11 +29,14 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
 
     private boolean hasAddress;
     private Stack<Fragment> mFragments;
+    private AddressListFragment addressListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
         initIntent();
         init();
@@ -60,11 +63,11 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
      * 显示收货地址列表界面
      */
     private void showListFragment() {
-        Fragment fragment = new AddressListFragment();
+        addressListFragment = new AddressListFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean("hasAddress", hasAddress);
-        fragment.setArguments(bundle);
-        showFragment(fragment);
+        addressListFragment.setArguments(bundle);
+        showFragment(addressListFragment);
     }
 
     /**
@@ -104,7 +107,7 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
         } else {
             getFragmentManager()
                     .beginTransaction()
-                    .remove(preFragment)
+                    .hide(preFragment)
                     .add(R.id.fragment_container, fragment)
                     .show(fragment)
                     .commitAllowingStateLoss();
@@ -115,18 +118,41 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
     @Override
     public void onBackPressed() {
         if (mFragments != null && mFragments.size() > 1) {
-            Fragment fragment1 = mFragments.pop();
-            Fragment fragment2 = mFragments.peek();
-            getFragmentManager()
-                    .beginTransaction()
-                    .remove(fragment1)
-                    .add(R.id.fragment_container, fragment2)
-                    .show(fragment2)
-                    .commitAllowingStateLoss();
+            Fragment fragment = mFragments.peek();
+            if (fragment instanceof AddressChangeFragment) {
+                ((AddressChangeFragment) fragment).onBackPressed();
+            } else {
+                //won't come into this, in case sth awful happens...
+                showPreFragment();
+            }
         } else {
             setResult(hasAddress ? RESULT_SET_OK : RESULT_EMPTY);
             finish();
         }
+    }
+
+    /**
+     * onBackPressed send to AddressChangeFragment, callback
+     * @param isChanged is data edited
+     * @param addressBean data
+     */
+    @Override
+    public void onChangeCompleted(boolean isChanged, AddressBean addressBean) {
+        //TODO:upload
+        if (isChanged) {
+            addressListFragment.onChangeCompleted(addressBean);
+        }
+        showPreFragment();
+    }
+
+    private void showPreFragment() {
+        Fragment fragment1 = mFragments.pop();
+        Fragment fragment2 = mFragments.peek();
+        getFragmentManager()
+                .beginTransaction()
+                .remove(fragment1)
+                .show(fragment2)
+                .commitAllowingStateLoss();
     }
 
     /**

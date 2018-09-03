@@ -34,7 +34,7 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
 
     private RecyclerView mRvList;
     private AddressListAdapter adapter;
-    private ArrayList<AddressBean> addressList;
+    private ArrayList<AddressBean> addressList = new ArrayList<>();
     private IAddressEdit callback;
     private boolean hasAddress;
 
@@ -111,8 +111,61 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
      * @param position position
      */
     @Override
-    public void gotoDelete(ArrayList<AddressBean> addressList, int position) {
+    public void gotoDelete(final ArrayList<AddressBean> addressList, final int position) {
+        new HintTitleDialog.HintTitleDialogBuilder(getActivity())
+                .title("确认删除")
+                .content("确定删除这条收货信息吗？")
+                .button1("取消", new HintTitleDialog.OnBtnClickListener() {
+                    @Override
+                    public void onClick(HintTitleDialog dialog) {
+                        dialog.dismiss();
+                    }
+                })
+                .button2("确定", new HintTitleDialog.OnBtnClickListener() {
+                    @Override
+                    public void onClick(HintTitleDialog dialog) {
+                        addressList.remove(position);
+                        adapter.notifyDataSetChanged();
+                        //TODO:need to upload
+                        dialog.dismiss();
+                    }
+                }).build().show(getActivity().getFragmentManager(), "address_delete_dialog");
+    }
 
+    /**
+     * 新增/编辑后的数据
+     * @param bean data
+     */
+    public void onChangeCompleted(AddressBean bean) {
+        if (addressList.size() == 0) {
+            addressList.add(bean);
+        } else {
+            boolean isEdit = false;
+            boolean isDefault = bean.isDefault;
+            if (isDefault) {
+                for (int index = 0; index < addressList.size(); index ++) {
+                    addressList.get(index).isDefault = false;
+                    if (!isEdit && addressList.get(index).id == bean.id) {
+                        addressList.set(index, bean);
+                        addressList.get(index).isDefault = true;//TODO:wtf???
+                        isEdit = true;
+                    }
+                }
+            } else {
+                for (int index = 0; index < addressList.size(); index ++) {
+                    if (addressList.get(index).id == bean.id) {
+                        addressList.set(index, bean);
+                        isEdit = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isEdit) {
+                addressList.add(bean);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -120,13 +173,14 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
      */
     private void initFakeData() {
         JSONArray array = new JSONArray();
-        for (int i = 0; i < 10; i ++) {
+        for (int i = 0; i < 3; i ++) {
             JSONObject object = new JSONObject();
             try {
                 object.put("id", i + 1);
                 object.put("name", "邓子明");
                 object.put("phone", "18840832890");
-                object.put("address", "这句话一共有十个字哦这句话一共有十个字哦这句话一共有十个字哦这句话一共有十个字哦这句话一共有十个字哦");
+                object.put("firstAddress", "山东省济南市高新区");
+                object.put("secondAddress", "这句话一共有十个字哦这句话一共有十个字哦这句话一共有十个字哦这句话一共有十个字哦这句话一共有十个字哦");
                 object.put("isDefault", i == 0);
                 object.put("tags", "公司");
                 array.put(object);
@@ -136,7 +190,6 @@ public class AddressListFragment extends Fragment implements View.OnClickListene
             }
         }
 
-        addressList = new ArrayList<>();
         try {
             for (int i = 0; i < array.length(); i ++) {
                 JSONObject obj = array.getJSONObject(i);

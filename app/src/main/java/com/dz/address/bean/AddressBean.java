@@ -14,7 +14,8 @@ public class AddressBean implements Parcelable {
     public int id;
     public String name;
     public String phone;
-    public String address;
+    public String firstAddress;//省市区
+    public String secondAddress;//详细地址
     public boolean isDefault;
     public String tags;
 
@@ -26,7 +27,8 @@ public class AddressBean implements Parcelable {
         id = in.readInt();
         name = in.readString();
         phone = in.readString();
-        address = in.readString();
+        firstAddress = in.readString();
+        secondAddress = in.readString();
         isDefault = in.readInt() == 1;
         tags = in.readString();
     }
@@ -35,7 +37,8 @@ public class AddressBean implements Parcelable {
         id = obj.optInt("id");
         name = obj.optString("name");
         phone = obj.optString("phone");
-        address = obj.optString("address");
+        firstAddress = obj.optString("firstAddress");
+        secondAddress = obj.optString("secondAddress");
         isDefault = obj.optBoolean("isDefault");
         tags = obj.optString("tags");
     }
@@ -62,7 +65,8 @@ public class AddressBean implements Parcelable {
         dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(phone);
-        dest.writeString(address);
+        dest.writeString(firstAddress);
+        dest.writeString(secondAddress);
         dest.writeInt(isDefault?1:0);
         dest.writeString(tags);
     }
@@ -73,7 +77,8 @@ public class AddressBean implements Parcelable {
                 "id:" + id + "," +
                 "name:" + name + "," +
                 "phone:" + phone + "," +
-                "address:" + address + "," +
+                "firstAddress:" + firstAddress + "," +
+                "secondAddress:" + secondAddress + "," +
                 "isDefault:" + isDefault + "," +
                 "tags:" + tags +
                 "}";

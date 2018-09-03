@@ -2,5 +2,5 @@
     <string name="app_name">DzAddress</string>
 
     <string name="rule_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`¬!"£$%^*()~=#{}[];':,./?/*-_+@&#060;&#062;&#064;&#038;</string>
-
+    <string name="address_change_dialog_content">修改的信息未保存\n确认现在返回吗？</string>
 </resources>

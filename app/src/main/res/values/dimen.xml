@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="divider_height">1dp</dimen>
+
+    <dimen name="value_20dp">20dp</dimen>
 </resources>

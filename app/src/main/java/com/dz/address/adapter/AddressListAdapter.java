@@ -1,5 +1,6 @@
 package com.dz.address.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -43,7 +44,7 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
         AddressBean addressBean = addressList.get(position);
         holder.mTvName.setText(addressBean.name);
         holder.mTvPhone.setText(addressBean.phone);
-        holder.mTvAddress.setText(addressBean.address);
+        holder.mTvAddress.setText(String.format("%s%s", addressBean.firstAddress, addressBean.secondAddress));
         if (!TextUtils.isEmpty(addressBean.tags)) {
             holder.mTvTag.setVisibility(View.VISIBLE);
             holder.mTvTag.setText(addressBean.tags);

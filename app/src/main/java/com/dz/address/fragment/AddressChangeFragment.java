@@ -1,15 +1,21 @@
 package com.dz.address.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
@@ -39,11 +45,33 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
 
     private static final String FILE_NAME = "province.json";
 
+    private EditText mEtPersonName;
+    private EditText mEtPhone;
+    private TextView mTvAddress;
+    private EditText mEtDetailAddress;
+    private RadioButton mRbIsDefault;
+    //TODO:tags
+    private HintTitleDialog dialog;
+
     private String type;
+    private boolean isChanged = false;
     private AddressBean editAddressBean;
+    private OnChangeCompleted onChangeCompleted;
+
     private List<String> provinceList = new ArrayList<>();
     private List<List<String>> cityList = new ArrayList<>();
     private List<List<List<String>>> thirdList = new ArrayList<>();
+
+    public interface OnChangeCompleted {
+        //TODO:upload?
+        void onChangeCompleted(boolean isChanged, AddressBean addressBean);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        onChangeCompleted = (OnChangeCompleted) activity;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,12 +94,55 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
     }
 
     private void initViews(View view) {
+        mEtPersonName = view.findViewById(R.id.et_address_change_name);
+        mEtPhone = view.findViewById(R.id.et_address_change_phone);
+        mTvAddress = view.findViewById(R.id.tv_location);
+        mEtDetailAddress = view.findViewById(R.id.et_address_change_address);
+        mRbIsDefault = view.findViewById(R.id.radio_is_default);
+        mRbIsDefault.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean flag = !editAddressBean.isDefault;
+                mRbIsDefault.setChecked(flag);
+                editAddressBean.isDefault = flag;
+                isChanged = true;
+            }
+        });
+
+        mEtPersonName.addTextChangedListener(textWatcher);
+        mEtPhone.addTextChangedListener(textWatcher);
+        mEtDetailAddress.addTextChangedListener(textWatcher);
         view.findViewById(R.id.ll_choose_location).setOnClickListener(this);
+        view.findViewById(R.id.tv_save).setOnClickListener(this);
 
         if (editAddressBean != null) {
             //TODO:set default data
+            mEtPersonName.setText(editAddressBean.name);
+            mEtPhone.setText(editAddressBean.phone);
+            mTvAddress.setText(editAddressBean.firstAddress);
+            mEtDetailAddress.setText(editAddressBean.secondAddress);
+            mRbIsDefault.setChecked(editAddressBean.isDefault);
+        } else {
+            editAddressBean = new AddressBean();
         }
     }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            isChanged = true;
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -79,6 +150,53 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
             case R.id.ll_choose_location:
                 showPickerView();
                 break;
+            case R.id.tv_save:
+                if (isChanged) {
+                    //TODO:检查数据完整性
+                    editAddressBean.name = mEtPersonName.getText().toString();
+                    editAddressBean.phone = mEtPhone.getText().toString();
+                    editAddressBean.firstAddress = mTvAddress.getText().toString();
+                    editAddressBean.secondAddress = mEtDetailAddress.getText().toString();
+                    editAddressBean.isDefault = mRbIsDefault.isChecked();
+                    isChanged = false;
+                    onChangeCompleted.onChangeCompleted(true, editAddressBean);
+                } else {
+                    onChangeCompleted.onChangeCompleted(false, null);
+                }
+                break;
+        }
+    }
+
+    /**
+     * on back pressed
+     * case 1 : show dialog
+     * case 2 : hide dialog
+     */
+    public void onBackPressed() {
+        if (isChanged) {
+            if (dialog == null || !dialog.isVisible()) {
+                dialog = new HintTitleDialog.HintTitleDialogBuilder(getActivity())
+                        .content(R.string.address_change_dialog_content)
+                        .button1("取消", new HintTitleDialog.OnBtnClickListener() {
+                            @Override
+                            public void onClick(HintTitleDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .button2("确定", new HintTitleDialog.OnBtnClickListener() {
+                            @Override
+                            public void onClick(HintTitleDialog dialog) {
+                                dialog.dismiss();
+                                onChangeCompleted.onChangeCompleted(false, null);
+                            }
+                        }).build();
+                dialog.show(getActivity().getFragmentManager(), "address_delete_dialog");
+            } else {
+                dialog.dismiss();
+            }
+        } else {
+            //未进行修改
+            onChangeCompleted.onChangeCompleted(false, null);
         }
     }
 
@@ -90,10 +208,12 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 //返回的分别是三个级别的选中位置
-                String tx = provinceList.get(options1) +
+                String firstAddress = provinceList.get(options1) +
                         cityList.get(options1).get(options2) +
                         thirdList.get(options1).get(options2).get(options3);
-
+                mTvAddress.setText(firstAddress);
+                editAddressBean.firstAddress = firstAddress;
+                isChanged = true;
             }
         })
                 .setTitleText("城市选择")
@@ -101,9 +221,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                 .setTextColorCenter(Color.BLACK) //设置选中项文字颜色
                 .setContentTextSize(20)
                 .build();
-
-        /*pvOptions.setPicker(options1Items);//一级选择器
-        pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
+        pvOptions.setTitleText("请选择所在城市");
         pvOptions.setPicker(provinceList, cityList, thirdList);//三级选择器
         pvOptions.show();
     }
@@ -164,43 +282,5 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
             e.printStackTrace();
             Log.e(TAG, "parseJson: wrong when parsing city data : e=" + e);
         }
-
-
-
-
-//        try {
-//            JSONArray array = new JSONArray(json);
-//            if (array.length() != 0) {
-//                for (int index = 0; index < array.length(); index ++) {
-//                    //第一层联动
-//                    JSONObject object = array.getJSONObject(index);
-//                    provinceList.add(object.optString("name"));
-//                    JSONArray secondArray = object.optJSONArray("child");
-//                    if (secondArray.length() != 0) {
-//                        List<String> secondTemp = new ArrayList<>();
-//                        List<List<String>> thirdTemp1 = new ArrayList<>();
-//                        for (int second = 0; second < secondArray.length(); second ++) {
-//                            //第二层联动
-//                            JSONObject secondObject = secondArray.optJSONObject(second);
-//                            secondTemp.add(secondObject.optString("name"));
-//                            JSONObject thirdObject = secondObject.optJSONObject("child");
-//                            List<String> thirdTemp2 = new ArrayList<>();
-//                            Iterator<String> iterator = thirdObject.keys();
-//                            while (iterator.hasNext()) {
-//                                thirdTemp2.add(thirdObject.optString(iterator.next()));
-//                            }
-//                            thirdTemp1.add(thirdTemp2);
-//                        }
-//                        cityList.add(secondTemp);
-//                        thirdList.add(thirdTemp1);
-//                    }
-//                }
-//            } else {
-//                Log.e(TAG, "parseJson: wrong when parsing city data : array.length() is 0!");
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            Log.e(TAG, "parseJson: wrong when parsing city data : e=" + e);
-//        }
     }
 }
