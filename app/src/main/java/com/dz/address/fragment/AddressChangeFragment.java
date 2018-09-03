@@ -220,6 +220,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                 .setDividerColor(Color.BLACK)
                 .setTextColorCenter(Color.BLACK) //设置选中项文字颜色
                 .setContentTextSize(20)
+                .setDecorView((ViewGroup) getActivity().getWindow().getDecorView().findViewById(android.R.id.content))
                 .build();
         pvOptions.setTitleText("请选择所在城市");
         pvOptions.setPicker(provinceList, cityList, thirdList);//三级选择器
