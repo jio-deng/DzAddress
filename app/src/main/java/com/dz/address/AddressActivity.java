@@ -5,12 +5,14 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.dz.address.bean.AddressBean;
 import com.dz.address.fragment.AddressChangeFragment;
 import com.dz.address.fragment.AddressListFragment;
+import com.dz.address.fragment.TypeinDialog;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -19,7 +21,8 @@ import java.util.Stack;
  * @Description 收货地址
  * Created by deng on 2018/8/29.
  */
-public class AddressActivity extends Activity implements AddressListFragment.IAddressEdit, AddressChangeFragment.OnChangeCompleted {
+public class AddressActivity extends Activity implements AddressListFragment.IAddressEdit,
+        AddressChangeFragment.OnChangeCompleted, TypeinDialog.OnTagDefined{
     private static final String TAG = "AddressActivity";
 
     public static final int RESULT_SET_OK = 1 << 2;
@@ -30,6 +33,7 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
     private boolean hasAddress;
     private Stack<Fragment> mFragments;
     private AddressListFragment addressListFragment;
+    private AddressChangeFragment addressChangeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +78,16 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
      * 显示收货地址编辑界面
      */
     private void showDetailFragment(String type, AddressBean bean) {
-        Fragment fragment = new AddressChangeFragment();
+        addressChangeFragment = new AddressChangeFragment();
 
         Bundle bundle = new Bundle();
         bundle.putString("type", type);
         if (bean != null) {
             bundle.putParcelable("address", bean);
         }
-        fragment.setArguments(bundle);
+        addressChangeFragment.setArguments(bundle);
 
-        showFragment(fragment);
+        showFragment(addressChangeFragment);
     }
 
     /**
@@ -153,6 +157,7 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
                 .remove(fragment1)
                 .show(fragment2)
                 .commitAllowingStateLoss();
+        addressChangeFragment = null;
     }
 
     /**
@@ -166,6 +171,19 @@ public class AddressActivity extends Activity implements AddressListFragment.IAd
             showDetailFragment(type, null);
         } else {
             showDetailFragment(type, addressList.get(position));
+        }
+    }
+
+    /**
+     * 设置自定义标签的回调
+     * @param tag new tag
+     */
+    @Override
+    public void onTagDefined(String tag) {
+        if (addressChangeFragment != null) {
+            addressChangeFragment.setNewTag(tag);
+        } else {
+            Log.e(TAG, "onTagDefined: addressChangeFragment is null, in where r u doing this shit ???");
         }
     }
 }

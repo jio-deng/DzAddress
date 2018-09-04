@@ -200,6 +200,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                 mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
                 mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
                 mTvTagEdit.setVisibility(View.GONE);
+                editAddressBean.tags = mTvTag1.getText().toString();
                 break;
             case R.id.tv_address_tag_2:
                 mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
@@ -207,6 +208,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                 mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
                 mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
                 mTvTagEdit.setVisibility(View.GONE);
+                editAddressBean.tags = mTvTag2.getText().toString();
                 break;
             case R.id.tv_address_tag_3:
                 mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
@@ -214,6 +216,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                 mTvTag3.setBackgroundResource(R.drawable.bg_circle_orange);
                 mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
                 mTvTagEdit.setVisibility(View.GONE);
+                editAddressBean.tags = mTvTag3.getText().toString();
                 break;
             case R.id.tv_address_tag_4:
                 if (isDefined) {
@@ -222,6 +225,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                     mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
                     mLlTag4.setBackgroundResource(R.drawable.bg_circle_orange_and_black);
                     mTvTagEdit.setVisibility(View.VISIBLE);
+                    editAddressBean.tags = mTvTag4.getText().toString();
                 } else {
                     showTag4EditDialog();
                 }
@@ -278,9 +282,24 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    /**
+     * 显示设置自定义标签的dialog
+     */
     private void showTag4EditDialog() {
         KeyboardUtil.closeKeybord(mTvTag4, getActivity());
-        //TODO edit dialog show
+        TypeinDialog dialog = new TypeinDialog();
+        dialog.show(getActivity().getFragmentManager(), "tag_type_in");
+    }
+
+    /**
+     * 自定义标签设置
+     * @param tag new tag
+     */
+    public void setNewTag(String tag) {
+        PreferenceUtil.getInstance().writeToPreference(ADDRESS_TAG_SELF_DEFINE, tag);
+        isDefined = true;
+        mTvTag4.setText(tag);
+        setTagShow(R.id.tv_address_tag_4);
     }
 
     /**
