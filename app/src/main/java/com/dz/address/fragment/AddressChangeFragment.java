@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.dz.address.R;
 import com.dz.address.bean.AddressBean;
+import com.dz.address.utils.KeyboardUtil;
+import com.dz.address.utils.PreferenceUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.dz.address.AddressActivity.TYPE_EDIT_ADDRESS;
+import static com.dz.address.utils.PreferenceUtil.ADDRESS_TAG_SELF_DEFINE;
 
 /**
  * @Description 新增／编辑收货地址界面
@@ -50,7 +54,16 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
     private TextView mTvAddress;
     private EditText mEtDetailAddress;
     private RadioButton mRbIsDefault;
-    //TODO:tags
+    private TextView mTvChoose;
+    /** tag start **/
+    private LinearLayout mLlTag4;
+    private TextView mTvTag1;
+    private TextView mTvTag2;
+    private TextView mTvTag3;
+    private TextView mTvTag4;
+    private TextView mTvTagEdit;
+    private boolean isDefined = false;
+    /** tag end **/
     private HintTitleDialog dialog;
 
     private String type;
@@ -108,11 +121,23 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                 isChanged = true;
             }
         });
+        mTvTag1 = view.findViewById(R.id.tv_address_tag_1);
+        mTvTag2 = view.findViewById(R.id.tv_address_tag_2);
+        mTvTag3 = view.findViewById(R.id.tv_address_tag_3);
+        mTvTag4 = view.findViewById(R.id.tv_address_tag_4);
+        mTvTagEdit = view.findViewById(R.id.tv_address_tag_edit);
+        mLlTag4 = view.findViewById(R.id.ll_address_tag_4);
 
+        mTvChoose = view.findViewById(R.id.tv_choose_loca);
         mEtPersonName.addTextChangedListener(textWatcher);
         mEtPhone.addTextChangedListener(textWatcher);
         mEtDetailAddress.addTextChangedListener(textWatcher);
-        view.findViewById(R.id.ll_choose_location).setOnClickListener(this);
+        mTvTag1.setOnClickListener(this);
+        mTvTag2.setOnClickListener(this);
+        mTvTag3.setOnClickListener(this);
+        mTvTag4.setOnClickListener(this);
+        mTvTagEdit.setOnClickListener(this);
+        mTvChoose.setOnClickListener(this);
         view.findViewById(R.id.tv_save).setOnClickListener(this);
 
         if (editAddressBean != null) {
@@ -122,8 +147,85 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
             mTvAddress.setText(editAddressBean.firstAddress);
             mEtDetailAddress.setText(editAddressBean.secondAddress);
             mRbIsDefault.setChecked(editAddressBean.isDefault);
+            String selfDefine = PreferenceUtil.getInstance().readString(ADDRESS_TAG_SELF_DEFINE);
+            if (!TextUtils.isEmpty(selfDefine)) {
+                mTvTag4.setText(selfDefine);
+                isDefined = true;
+            }
+            setTagsShow(editAddressBean.tags);
+
         } else {
             editAddressBean = new AddressBean();
+        }
+    }
+
+    /**
+     * 加载传进的tag
+     * @param tag editAddressBean.tag
+     */
+    private void setTagsShow(String tag) {
+        if (TextUtils.isEmpty(tag))
+            return;
+
+        String selfDefine = PreferenceUtil.getInstance().readString(ADDRESS_TAG_SELF_DEFINE);
+        if (TextUtils.equals(selfDefine, tag)) {
+            setTagShow(R.id.tv_address_tag_4);
+            mTvTagEdit.setVisibility(View.VISIBLE);
+            mLlTag4.setBackgroundResource(R.drawable.bg_circle_orange_and_black);
+            return;
+        }
+
+        switch (tag) {
+            case "公司":
+                setTagShow(R.id.tv_address_tag_1);
+                break;
+            case "家":
+                setTagShow(R.id.tv_address_tag_2);
+                break;
+            case "学校":
+                setTagShow(R.id.tv_address_tag_3);
+                break;
+        }
+    }
+
+    /**
+     * tag点击显示
+     * @param id 控件id
+     */
+    private void setTagShow(int id) {
+        switch (id) {
+            case R.id.tv_address_tag_1:
+                mTvTag1.setBackgroundResource(R.drawable.bg_circle_orange);
+                mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTagEdit.setVisibility(View.GONE);
+                break;
+            case R.id.tv_address_tag_2:
+                mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTag2.setBackgroundResource(R.drawable.bg_circle_orange);
+                mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTagEdit.setVisibility(View.GONE);
+                break;
+            case R.id.tv_address_tag_3:
+                mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTag3.setBackgroundResource(R.drawable.bg_circle_orange);
+                mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                mTvTagEdit.setVisibility(View.GONE);
+                break;
+            case R.id.tv_address_tag_4:
+                if (isDefined) {
+                    mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                    mLlTag4.setBackgroundResource(R.drawable.bg_circle_orange_and_black);
+                    mTvTagEdit.setVisibility(View.VISIBLE);
+                } else {
+                    showTag4EditDialog();
+                }
+                break;
         }
     }
 
@@ -147,7 +249,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ll_choose_location:
+            case R.id.tv_choose_loca:
                 showPickerView();
                 break;
             case R.id.tv_save:
@@ -164,7 +266,21 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
                     onChangeCompleted.onChangeCompleted(false, null);
                 }
                 break;
+            case R.id.tv_address_tag_1:
+            case R.id.tv_address_tag_2:
+            case R.id.tv_address_tag_3:
+            case R.id.tv_address_tag_4:
+                setTagShow(v.getId());
+                break;
+            case R.id.tv_address_tag_edit:
+                showTag4EditDialog();
+                break;
         }
+    }
+
+    private void showTag4EditDialog() {
+        KeyboardUtil.closeKeybord(mTvTag4, getActivity());
+        //TODO edit dialog show
     }
 
     /**
@@ -204,6 +320,7 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
      * 弹出选择器
      */
     private void showPickerView() {
+        KeyboardUtil.closeKeybord(mTvChoose, getActivity());
         OptionsPickerView pvOptions = new OptionsPickerBuilder(getActivity(), new OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
