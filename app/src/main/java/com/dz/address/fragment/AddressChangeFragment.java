@@ -195,37 +195,58 @@ public class AddressChangeFragment extends Fragment implements View.OnClickListe
     private void setTagShow(int id) {
         switch (id) {
             case R.id.tv_address_tag_1:
-                mTvTag1.setBackgroundResource(R.drawable.bg_circle_orange);
-                mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
-                mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTagEdit.setVisibility(View.GONE);
-                editAddressBean.tags = mTvTag1.getText().toString();
+                if (TextUtils.equals(editAddressBean.tags, mTvTag1.getText().toString())) {
+                    mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                    editAddressBean.tags = "";
+                } else {
+                    mTvTag1.setBackgroundResource(R.drawable.bg_circle_orange);
+                    mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                    mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTagEdit.setVisibility(View.GONE);
+                    editAddressBean.tags = mTvTag1.getText().toString();
+                }
                 break;
             case R.id.tv_address_tag_2:
-                mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTag2.setBackgroundResource(R.drawable.bg_circle_orange);
-                mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
-                mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTagEdit.setVisibility(View.GONE);
-                editAddressBean.tags = mTvTag2.getText().toString();
+                if (TextUtils.equals(editAddressBean.tags, mTvTag2.getText().toString())) {
+                    mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                    editAddressBean.tags = "";
+                } else {
+                    mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTag2.setBackgroundResource(R.drawable.bg_circle_orange);
+                    mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                    mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTagEdit.setVisibility(View.GONE);
+                    editAddressBean.tags = mTvTag2.getText().toString();
+                }
                 break;
             case R.id.tv_address_tag_3:
-                mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTag3.setBackgroundResource(R.drawable.bg_circle_orange);
-                mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
-                mTvTagEdit.setVisibility(View.GONE);
-                editAddressBean.tags = mTvTag3.getText().toString();
+                if (TextUtils.equals(editAddressBean.tags, mTvTag3.getText().toString())) {
+                    mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                    editAddressBean.tags = "";
+                } else {
+                    mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTag3.setBackgroundResource(R.drawable.bg_circle_orange);
+                    mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                    mTvTagEdit.setVisibility(View.GONE);
+                    editAddressBean.tags = mTvTag3.getText().toString();
+                }
                 break;
             case R.id.tv_address_tag_4:
                 if (isDefined) {
-                    mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
-                    mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
-                    mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
-                    mLlTag4.setBackgroundResource(R.drawable.bg_circle_orange_and_black);
-                    mTvTagEdit.setVisibility(View.VISIBLE);
-                    editAddressBean.tags = mTvTag4.getText().toString();
+                    if (TextUtils.equals(editAddressBean.tags, mTvTag4.getText().toString())) {
+                        mTvTagEdit.setVisibility(View.GONE);
+                        mLlTag4.setBackgroundResource(R.drawable.bg_black_circle);
+                        editAddressBean.tags = "";
+                    } else {
+                        mTvTag1.setBackgroundResource(R.drawable.bg_black_circle);
+                        mTvTag2.setBackgroundResource(R.drawable.bg_black_circle);
+                        mTvTag3.setBackgroundResource(R.drawable.bg_black_circle);
+                        mLlTag4.setBackgroundResource(R.drawable.bg_circle_orange_and_black);
+                        mTvTagEdit.setVisibility(View.VISIBLE);
+                        editAddressBean.tags = mTvTag4.getText().toString();
+                    }
                 } else {
                     showTag4EditDialog();
                 }
